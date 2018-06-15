@@ -40,19 +40,22 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
+//#define TXBUFFERSIZE   (countof(TxBuffer) - 1)
+#define TXBUFFERSIZE   150
+#define RXBUFFERSIZE   150//0x20
+
 /* Private macro -------------------------------------------------------------*/
+//#define countof(a)   (sizeof(a) / sizeof(*(a)))
+
 /* Private variables ---------------------------------------------------------*/
-uint16_t capture = 0;
-extern __IO uint16_t CCR1_Val;
-extern __IO uint16_t CCR2_Val;
-extern __IO uint16_t CCR3_Val;
-extern __IO uint16_t CCR4_Val;
+//uint8_t TxBuffer[] = "\n\rUSART Hyperterminal Interrupts Example: USART-Hyperterminal communication using Interrupt\n\r";
+uint8_t TxBuffer[RXBUFFERSIZE];
+uint8_t RxBuffer[RXBUFFERSIZE];
+uint8_t NbrOfDataToTransfer = TXBUFFERSIZE;
+uint8_t NbrOfDataToRead = RXBUFFERSIZE;
+__IO uint8_t TxCount = 0; 
+__IO uint16_t RxCount = 0; 
 
-extern __IO uint8_t exti_flag;
-extern __IO uint32_t counting;
-
-extern __IO uint8_t pressed;
-extern __IO uint8_t no_exti;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -107,66 +110,32 @@ void PendSV_Handler(void)
   */
 void SysTick_Handler(void)
 {
-  TimingDelay_Decrement();
-  if(counting++ > 199)
-    counting = 0;
 }
 
 void EXTI4_15_IRQHandler(void)
 {
-  if(EXTI_GetITStatus(EXTI_Line8) != RESET && no_exti == 0)
-  {
-    pressed = 1;
-    exti_flag = 8;
-    EXTI_ClearITPendingBit(EXTI_Line8);
-  }
-  else{EXTI_ClearITPendingBit(EXTI_Line8);}
-
-	if(EXTI_GetITStatus(EXTI_Line6) != RESET && no_exti == 0)
-  {
-    pressed = 1;
-    exti_flag = 6;
-    EXTI_ClearITPendingBit(EXTI_Line6);
-  }
-  else{EXTI_ClearITPendingBit(EXTI_Line6);}
-
-	if(EXTI_GetITStatus(EXTI_Line5) != RESET && no_exti == 0)
-  {
-    pressed = 1;
-    exti_flag = 5;
-    EXTI_ClearITPendingBit(EXTI_Line5);
-  }
-	else{EXTI_ClearITPendingBit(EXTI_Line5);}
-
 }
 
 
 void TIM3_IRQHandler(void)
 {
-  pressed ++;
-  if (TIM_GetITStatus(TIM3, TIM_IT_CC4) != RESET)
-  {
-    TIM_ClearITPendingBit(TIM3, TIM_IT_CC4);
-
-    /* LED4 toggling with frequency = 439.4 Hz */
-    capture = TIM_GetCapture4(TIM3);
-    TIM_SetCompare4(TIM3, capture + 6826);
-//    if(EXTI_GetITStatus(EXTI_Line8) == RESET )
-//    release = 1;
-  }
-/*  else if(TIM_GetITStatus(TIM3, TIM_IT_CC3) != RESET)
-  {
-    TIM_ClearITPendingBit(TIM3, TIM_IT_CC3);
-  }
-  else if(TIM_GetITStatus(TIM3, TIM_IT_CC2) != RESET)
-  {
-    TIM_ClearITPendingBit(TIM3, TIM_IT_CC2);
-  }
-  else if(TIM_GetITStatus(TIM3, TIM_IT_CC1) != RESET)
-  {
-    TIM_ClearITPendingBit(TIM3, TIM_IT_CC1);
-  }*/
 }
+
+
+void USART2_IRQHandler(void)
+{
+  uint8_t ch;  
+  if(USART_GetITStatus(EVAL_COM1, USART_IT_RXNE) != RESET)
+  {
+    /* Read one byte from the receive data register */
+    ch = (USART_ReceiveData(EVAL_COM1) & 0x7F);
+    if(ch == 0x0023){ch = 0x3F;}//if key in #
+    USART_SendData(EVAL_COM1, ch);
+
+  }
+}
+
+
 
 /**
   * @brief  This function handles PPP interrupt request.

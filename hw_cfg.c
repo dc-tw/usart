@@ -5,8 +5,7 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-extern uint8_t scan_flag;
-extern __IO uint32_t TimingDelay;
+__IO uint32_t TimingDelay;
 
 EXTI_InitTypeDef   EXTI_InitStructure;
 GPIO_InitTypeDef   GPIO_InitStructure;
@@ -31,7 +30,8 @@ void USART_Config(void);
 	
 void Delay(__IO uint32_t nTime);
 void EXTI4_15_Config(void);
-
+void NVIC_Config(void);
+  
 /* Private functions ---------------------------------------------------------*/
 
 /**
@@ -137,11 +137,7 @@ void EXTI4_15_Config(void)
   NVIC_Init(&NVIC_InitStructure);
 }
 
-void USART_Config(void)
-{ 
-  USART_InitTypeDef USART_InitStructure;
-  
-  /* USARTx configured as follow:
+/* USARTx configured as follow:
   - BaudRate = 115200 baud  
   - Word Length = 8 Bits
   - Stop Bit = 1 Stop Bit
@@ -149,6 +145,12 @@ void USART_Config(void)
   - Hardware flow control disabled (RTS and CTS signals)
   - Receive and transmit enabled
   */
+/*
+void USART_Config(void)
+{ 
+  USART_InitTypeDef USART_InitStructure;
+  
+  
   USART_InitStructure.USART_BaudRate = 115200;
   USART_InitStructure.USART_WordLength = USART_WordLength_8b;
   USART_InitStructure.USART_StopBits = USART_StopBits_1;
@@ -157,37 +159,30 @@ void USART_Config(void)
   USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
   
   GPIO_InitTypeDef GPIO_InitStructure;
-  /* Enable GPIO clock */
+
   RCC_AHBPeriphClockCmd(EVAL_COM1_RX_GPIO_CLK, ENABLE);
 
-  /* Enable USART clock */
   RCC_APB1PeriphClockCmd(EVAL_COM1_CLK, ENABLE); 
 
-  /* Connect PXx to USARTx_Tx */
   GPIO_PinAFConfig(EVAL_COM1_TX_GPIO_PORT, EVAL_COM1_TX_SOURCE, EVAL_COM1_TX_AF);
 
-  /* Connect PXx to USARTx_Rx */
   GPIO_PinAFConfig(EVAL_COM1_RX_GPIO_PORT, EVAL_COM1_RX_SOURCE, EVAL_COM1_RX_AF);
-  
-  /* Configure USART Tx as alternate function push-pull */
+
   GPIO_InitStructure.GPIO_Pin = EVAL_COM1_TX_PIN;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
   GPIO_Init(EVAL_COM1_TX_GPIO_PORT, &GPIO_InitStructure);
-    
-  /* Configure USART Rx as alternate function push-pull */
+
   GPIO_InitStructure.GPIO_Pin = EVAL_COM1_RX_PIN;
   GPIO_Init(EVAL_COM1_TX_GPIO_PORT, &GPIO_InitStructure);
 
-  /* USART configuration */
   USART_Init(EVAL_COM1, &USART_InitStructure);
-    
-  /* Enable USART */
+
   USART_Cmd(EVAL_COM1, ENABLE);
 	
-}
+}*/
 
 void TIM_Config(void)
 {
@@ -308,6 +303,77 @@ PUTCHAR_PROTOTYPE
 
   return ch;
 }
+
+void NVIC_Config(void)
+{
+  NVIC_InitTypeDef NVIC_InitStructure;
+
+  /* Enable the USART Interrupt */
+  NVIC_InitStructure.NVIC_IRQChannel = EVAL_COM1_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+}
+
+
+/**
+  * @brief Configure the USART Device
+  * @param  None
+  * @retval None
+  */
+void USART_Config(void)
+{
+  USART_InitTypeDef USART_InitStructure;
+    
+/* USARTx configured as follow:
+  - BaudRate = 9600 baud  
+  - Word Length = 8 Bits
+  - Two Stop Bit
+  - Odd parity
+  - Hardware flow control disabled (RTS and CTS signals)
+  - Receive and transmit enabled
+  */
+  USART_InitStructure.USART_BaudRate = 115200;//origin 9600
+  USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+  USART_InitStructure.USART_StopBits = USART_StopBits_1;
+  USART_InitStructure.USART_Parity = USART_Parity_No;
+  USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+  USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+  
+  //STM_EVAL_COMInit(COM1, &USART_InitStructure);
+  GPIO_InitTypeDef GPIO_InitStructure;
+
+  /* Enable GPIO clock */
+  RCC_AHBPeriphClockCmd(EVAL_COM1_RX_GPIO_CLK, ENABLE);
+
+  /* Enable USART clock */
+  RCC_APB1PeriphClockCmd(EVAL_COM1_CLK, ENABLE); 
+
+  /* Connect PXx to USARTx_Tx */
+  GPIO_PinAFConfig(EVAL_COM1_TX_GPIO_PORT, EVAL_COM1_TX_SOURCE, EVAL_COM1_TX_AF);
+
+  /* Connect PXx to USARTx_Rx */
+  GPIO_PinAFConfig(EVAL_COM1_RX_GPIO_PORT, EVAL_COM1_RX_SOURCE, EVAL_COM1_RX_AF);
+  
+  /* Configure USART Tx as alternate function push-pull */
+  GPIO_InitStructure.GPIO_Pin = EVAL_COM1_TX_PIN;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+  GPIO_Init(EVAL_COM1_TX_GPIO_PORT, &GPIO_InitStructure);
+    
+  /* Configure USART Rx as alternate function push-pull */
+  GPIO_InitStructure.GPIO_Pin = EVAL_COM1_RX_PIN;
+  GPIO_Init(EVAL_COM1_TX_GPIO_PORT, &GPIO_InitStructure);
+
+  /* USART configuration */
+  USART_Init(EVAL_COM1, &USART_InitStructure);
+    
+  /* Enable USART */
+  USART_Cmd(EVAL_COM1, ENABLE);
+}
+
 
 #ifdef  USE_FULL_ASSERT
 

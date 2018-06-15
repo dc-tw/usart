@@ -14,7 +14,7 @@
 
 
 /* Exported constants --------------------------------------------------------*/
-   #define EVAL_COM1                        USART2
+#define EVAL_COM1                        USART2
 #define EVAL_COM1_CLK                    RCC_APB1Periph_USART2
 
 #define EVAL_COM1_TX_PIN                 GPIO_Pin_2
@@ -41,9 +41,11 @@
 #define EVAL_COM1_RTS_SOURCE             GPIO_PinSource12
 #define EVAL_COM1_RTS_AF                 GPIO_AF_1
    
-#define EVAL_COM1_IRQn                   USART1_IRQn
+#define EVAL_COM1_IRQn                   USART2_IRQn
 
 #define COMn                             1
+
+
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 
@@ -54,6 +56,7 @@ void assert_failed(uint8_t* file, uint32_t line);
 void EXTI4_15_Config(void);
 void USART_Config(void);
 void TIM_Config(void);
+void NVIC_Config(void);
 
 #ifdef __cplusplus
 }

@@ -396,11 +396,11 @@ ARM Macro Assembler    Page 7
 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M0 --apcs=interw
 ork --depend=stm32f051\startup_stm32f030.d -ostm32f051\startup_stm32f030.o -ID:
-\hoyen-David\Proj\keyboard3\MDK-ARM\RTE -IC:\Keil_v5\ARM\PACK\Keil\STM32F0xx_DF
-P\2.0.0\Drivers\CMSIS\Device\ST\STM32F0xx\Include -IC:\Keil_v5\ARM\CMSIS\Includ
-e --predefine="__MICROLIB SETA 1" --predefine="__UVISION_VERSION SETA 518" --pr
-edefine="STM32F030x8 SETA 1" --list=startup_stm32f030.lst ..\Libraries\CMSIS\De
-vice\ST\STM32F0xx\Source\Templates\arm\startup_stm32f030.s
+\hoyen-David\Proj\usart\MDK-ARM\RTE -IC:\Keil_v5\ARM\PACK\Keil\STM32F0xx_DFP\2.
+0.0\Drivers\CMSIS\Device\ST\STM32F0xx\Include -IC:\Keil_v5\ARM\CMSIS\Include --
+predefine="__MICROLIB SETA 1" --predefine="__UVISION_VERSION SETA 518" --predef
+ine="STM32F030x8 SETA 1" --list=startup_stm32f030.lst ..\Libraries\CMSIS\Device
+\ST\STM32F0xx\Source\Templates\arm\startup_stm32f030.s
 
 
 
